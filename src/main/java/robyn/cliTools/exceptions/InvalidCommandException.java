@@ -1,4 +1,4 @@
-package robyn.cli.exceptions;
+package robyn.cliTools.exceptions;
 
 /**
  * InvalidCommandException

@@ -4,11 +4,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+
+// TODO delete later
+@SuppressWarnings("unused")
 
 /**
  * CLI
@@ -22,44 +24,80 @@ public class CLI {
     private InputStream in;
     private List<PrintStream> out;
 
-    private void print(String message, Object... objects) {
+    /**
+     * prints a formatted message to all print streams
+     */
+    protected void print(String message, Object... objects) {
         out.stream().forEach(o -> {
             o.print(String.format(message, objects));
             o.flush();
         });
     }
 
-    private void println(String message, Object... objects) {
+    /**
+     * prints a formatted message to all print streams with a new line at the end
+     */
+    protected void println(String message, Object... objects) {
         out.stream().forEach(o -> {
             o.println(String.format(message, objects));
             o.flush();
         });
     }
 
-    public String readLine() {
+    /**
+     * reads the next line of input
+     */
+    protected String readLine() {
         return scanner.nextLine();
     }
 
-    // TODO incomplete implementation. its late...
-    private String parseCommandString(String commandString) {
+    /**
+     * parses a command string
+     * splits commands by spaces
+     * ends a set of arguments at the end of the string (typically a newline)
+     * anything in quotes is kept together
+     * - cmd hello world -> [cmd, hello, world]
+     * - cmd "hello world" -> [cmd, hello world]
+     *
+     * @param commandString
+     */
+    private String[] parseCommandString(String commandString) {
+        // allows us to bypass spaces in an argument
         boolean inString = false;
+        // stores the argument that is currently being parsed
         String currentArg = "";
+        // stores a list of arguments as they are parsed
         List<String> args = new ArrayList<>();
+        // iterate through characters in the input string
         for (int i = 0; i < commandString.length(); i++) {
+            // grab current character
             Character c = commandString.charAt(i);
+            // check if you are entering or leaving a string
             if (c == '"') {
                 if (inString) {
-                    args.add(currentArg);
-                    currentArg = "";
                     inString = false;
                 } else {
                     inString = true;
                 }
-
+                // skip the rest of the logic if c == '"'
+                continue;
+                // if c is a space (and not a ") then you are at an argument boundary
+            } else if (c == ' ') {
+                // protects against multiple spaces
+                if (currentArg.length() > 0) {
+                    // add to argument list
+                    args.add(currentArg);
+                    // reset current argument buffer
+                    currentArg = "";
+                }
             }
+            // if c != '"' and c != ' '...
+            // append the current character to the current argument buffer
+            currentArg += c;
 
         }
-        return null;
+        // return a string array of the parsed arguments
+        return (String[]) args.toArray();
     }
 
     /**
@@ -68,6 +106,13 @@ public class CLI {
      */
     public CLI() {
         this(System.in, Arrays.asList(System.out));
+    }
+
+    /**
+     * Creates a CLI given an input stream and a single output stream
+     */
+    public CLI(InputStream in, PrintStream out) {
+        this(in, Arrays.asList(out));
     }
 
     /**
