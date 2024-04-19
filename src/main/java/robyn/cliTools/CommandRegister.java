@@ -1,5 +1,7 @@
 package robyn.cliTools;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,9 +18,14 @@ import robyn.cliTools.exceptions.*;
  */
 public class CommandRegister {
 
-    private Map<String, Command> commandMap;
-    private Map<String, String> aliasMap;
-    private Map<String, List<String>> reverseAliasMap;
+    private Map<String, Command> commandMap = new HashMap<>();
+    private Map<String, String> aliasMap = new HashMap<>();
+    private Map<String, List<String>> reverseAliasMap = new HashMap<>();
+
+    public Map<String, String> getAliases() {
+        // return copy to protect against mutations
+        return new HashMap<>(aliasMap);
+    }
 
     /**
      * Adds a command to the register
@@ -42,17 +49,19 @@ public class CommandRegister {
      * @param commandIdentifier
      */
     public void registerAlias(String aliasIdentifier, String commandIdentifier)
-            throws CommandIdentifierException, InvalidCommandException {
-        if (!commandMap.keySet().contains(commandIdentifier)) {
-            throw new InvalidCommandException(
-                    String.format("Alias registration failed: %s is not a valid command", commandIdentifier));
-        }
+            throws CommandIdentifierException {
+        String identifier = getCommandIdentifier(commandIdentifier);
         if (aliasMap.keySet().contains(aliasIdentifier)) {
             throw new CommandIdentifierException(
-                    String.format("Alias registration failed: %s is already an alias"));
+                    String.format("{%s} is already an alias"));
         }
-        aliasMap.put(aliasIdentifier, commandIdentifier);
-        reverseAliasMap.get(commandIdentifier).add(aliasIdentifier);
+        aliasMap.put(aliasIdentifier, identifier);
+        List<String> aliases = reverseAliasMap.get(identifier);
+        if (aliases == null) {
+            reverseAliasMap.put(identifier, new ArrayList<>());
+            aliases = reverseAliasMap.get(identifier);
+        }
+        aliases.add(aliasIdentifier);
     }
 
     /**
@@ -105,7 +114,7 @@ public class CommandRegister {
         String commandIdentifier = aliasMap.get(identifier);
         if (commandIdentifier == null) {
             throw new CommandIdentifierException(
-                    String.format("Invalid identifier: %s", identifier));
+                    String.format("Invalid identifier: {%s}", identifier));
         }
         return commandIdentifier;
     }
@@ -145,8 +154,12 @@ public class CommandRegister {
     public void runCommand(String[] args) throws CommandIdentifierException {
         // command cannot be null because of internal checks
         Command command = getCommand(args[0]);
-        command.run(args);
-
+        try {
+            command.run(args);
+        } catch (Exception e) {
+            // this shouldn't happen but we don't want the cli to crash
+            e.printStackTrace();
+        }
     }
 
 }

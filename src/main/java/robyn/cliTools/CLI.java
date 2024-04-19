@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+import robyn.cliTools.exceptions.CommandIdentifierException;
+
 // TODO delete later
 @SuppressWarnings("unused")
 
@@ -16,7 +18,7 @@ import java.util.Scanner;
  * CLI
  */
 public class CLI {
-    private CommandRegister commandRegister;
+    public CommandRegister reg;
     private String prompt = "$ ";
 
     private Scanner scanner;
@@ -27,7 +29,7 @@ public class CLI {
     /**
      * prints a formatted message to all print streams
      */
-    protected void print(String message, Object... objects) {
+    public void print(String message, Object... objects) {
         out.stream().forEach(o -> {
             o.print(String.format(message, objects));
             o.flush();
@@ -37,7 +39,7 @@ public class CLI {
     /**
      * prints a formatted message to all print streams with a new line at the end
      */
-    protected void println(String message, Object... objects) {
+    public void println(String message, Object... objects) {
         out.stream().forEach(o -> {
             o.println(String.format(message, objects));
             o.flush();
@@ -90,14 +92,15 @@ public class CLI {
                     // reset current argument buffer
                     currentArg = "";
                 }
+                continue;
             }
             // if c != '"' and c != ' '...
             // append the current character to the current argument buffer
             currentArg += c;
-
         }
+        args.add(currentArg);
         // return a string array of the parsed arguments
-        return (String[]) args.toArray();
+        return args.toArray(new String[0]);
     }
 
     /**
@@ -123,7 +126,26 @@ public class CLI {
         // make sure out is not a generic List
         this.out = new ArrayList<PrintStream>(out);
         this.scanner = new Scanner(in);
-        commandRegister = new CommandRegister();
+        reg = new CommandRegister();
+    }
+
+    public void runCommand(String[] args) throws CommandIdentifierException {
+        reg.runCommand(args);
+    }
+
+    public void start() {
+        boolean running = true;
+        // TODO load configuration file (ie aliases)
+        while (running) {
+            print(prompt);
+            String inputString = readLine();
+            String[] args = parseCommandString(inputString);
+            try {
+                runCommand(args);
+            } catch (CommandIdentifierException e) {
+                println(e.getMessage());
+            }
+        }
     }
 
     public static void main(String[] args) throws FileNotFoundException {

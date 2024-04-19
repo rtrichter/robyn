@@ -9,5 +9,5 @@ public interface Command {
     /**
      * Returns a string to be printed by the CLI
      */
-    public String run(String[] args);
+    public void run(String[] args);
 }

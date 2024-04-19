@@ -1,0 +1,12 @@
+$ Aliases: 
+	exit: quit
+
+$ 
+Added: 0.00 + 2.00 = 2.00
+$ 
+Added: 2.00 + 8.00 = 10.00
+$ 
+Subtracted: 10.00 - 3.00 = 7.00
+$ $ 
+Multiplied: 7.00 * 8.00 = 56.00
+$ 
