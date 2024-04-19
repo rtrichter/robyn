@@ -61,7 +61,7 @@ public class CLI {
      *
      * @param commandString
      */
-    private String[] parseCommandString(String commandString) {
+    public String[] parseCommandString(String commandString) {
         // allows us to bypass spaces in an argument
         boolean inString = false;
         // stores the argument that is currently being parsed
@@ -82,7 +82,7 @@ public class CLI {
                 // skip the rest of the logic if c == '"'
                 continue;
                 // if c is a space (and not a ") then you are at an argument boundary
-            } else if (c == ' ') {
+            } else if (c == ' ' && !inString) {
                 // protects against multiple spaces
                 if (currentArg.length() > 0) {
                     // add to argument list
@@ -96,7 +96,9 @@ public class CLI {
             // append the current character to the current argument buffer
             currentArg += c;
         }
-        args.add(currentArg);
+        if (currentArg.length() > 0) {
+            args.add(currentArg);
+        }
         // return a string array of the parsed arguments
         return args.toArray(new String[0]);
     }
