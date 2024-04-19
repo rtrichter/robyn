@@ -9,10 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+import robyn.cliTools.commands.DefaultCommandsContainer;
 import robyn.cliTools.exceptions.CommandIdentifierException;
-
-// TODO delete later
-@SuppressWarnings("unused")
 
 /**
  * CLI
@@ -127,6 +125,8 @@ public class CLI {
         this.out = new ArrayList<PrintStream>(out);
         this.scanner = new Scanner(in);
         reg = new CommandRegister();
+        CommandContainer defaultCommands = new DefaultCommandsContainer(this);
+        defaultCommands.registerAll(this);
     }
 
     public void runCommand(String[] args) throws CommandIdentifierException {

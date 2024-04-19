@@ -53,7 +53,8 @@ public class CommandRegister {
         String identifier = getCommandIdentifier(commandIdentifier);
         if (aliasMap.keySet().contains(aliasIdentifier)) {
             throw new CommandIdentifierException(
-                    String.format("{%s} is already an alias"));
+                    String.format("{%s} is already an alias to {%s}", aliasIdentifier,
+                            getCommandIdentifier(aliasIdentifier)));
         }
         aliasMap.put(aliasIdentifier, identifier);
         List<String> aliases = reverseAliasMap.get(identifier);
