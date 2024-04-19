@@ -42,4 +42,8 @@ public class Calculator {
         ans = 0;
     }
 
+    public double raise(double base, double exponent) {
+        return Math.pow(base, exponent);
+    }
+
 }

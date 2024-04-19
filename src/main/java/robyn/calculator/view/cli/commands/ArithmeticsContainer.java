@@ -4,6 +4,7 @@ import java.util.Map;
 
 import robyn.calculator.model.Calculator;
 import robyn.cliTools.CLI;
+import robyn.cliTools.Command;
 import robyn.cliTools.CommandContainer;
 import robyn.cliTools.exceptions.CommandIdentifierException;
 
@@ -12,61 +13,85 @@ import robyn.cliTools.exceptions.CommandIdentifierException;
  */
 public class ArithmeticsContainer extends CommandContainer {
 
-    private Calculator calculator;
+    private Calculator calc;
     private CLI cli;
 
     public ArithmeticsContainer(Calculator calculator, CLI calculatorCLI) {
-        this.calculator = calculator;
+        this.calc = calculator;
         this.cli = calculatorCLI;
 
         // prepare all command for registration
-        commands.put("add", this::add);
-        commands.put("sub", this::subtract);
-        commands.put("mult", this::multiply);
-        commands.put("div", this::divide);
-        commands.put("quit", this::quit);
-        commands.put("alias", this::alias);
-        commands.put("unalias", this::unalias);
+        commands.put("add", add);
+        commands.put("sub", subtract);
+        commands.put("mult", multiply);
+        commands.put("div", divide);
+        commands.put("quit", quit);
+        commands.put("alias", alias);
+        commands.put("unalias", unalias);
+        commands.put("clear", clear);
+        commands.put("ans", ans);
+        commands.put("pow", pow);
 
         // prepare all aliases for registration
         aliases.put("exit", "quit");
+        aliases.put("+", "add");
+        aliases.put("-", "sub");
+        aliases.put("*", "mult");
+        aliases.put("/", "div");
+        aliases.put("**", "pow");
     }
 
-    public void add(String[] args) {
-        double previous = calculator.getAns();
+    public Command add = (args) -> {
+        double previous = calc.getAns();
         double operand = Double.parseDouble(args[1]);
-        calculator.add(operand);
-        cli.println("\nAdded: %.2f + %.2f = %.2f", previous, operand, calculator.getAns());
-    }
+        calc.add(operand);
+        cli.println("Added: %.2f + %.2f = %.2f", previous, operand, calc.getAns());
+    };
 
-    public void subtract(String[] args) {
-        double previous = calculator.getAns();
+    public Command subtract = (args) -> {
+        double previous = calc.getAns();
         double operand = Double.parseDouble(args[1]);
-        calculator.subtract(operand);
-        cli.println("\nSubtracted: %.2f - %.2f = %.2f", previous, operand, calculator.getAns());
-    }
+        calc.subtract(operand);
+        cli.println("Subtracted: %.2f - %.2f = %.2f", previous, operand, calc.getAns());
+    };
 
-    public void multiply(String[] args) {
-        double previous = calculator.getAns();
+    public Command multiply = (args) -> {
+        double previous = calc.getAns();
         double operand = Double.parseDouble(args[1]);
-        calculator.multiply(operand);
-        cli.println("\nMultiplied: %.2f * %.2f = %.2f", previous, operand, calculator.getAns());
-    }
+        calc.multiply(operand);
+        cli.println("Multiplied: %.2f * %.2f = %.2f", previous, operand, calc.getAns());
+    };
 
-    public void divide(String[] args) {
-        double previous = calculator.getAns();
+    public Command divide = (args) -> {
+        double previous = calc.getAns();
         double operand = Double.parseDouble(args[1]);
-        calculator.divide(operand);
-        cli.println("\nDivided: %.2f / %.2f = %.2f", previous, operand, calculator.getAns());
-    }
+        calc.divide(operand);
+        cli.println("Divided: %.2f / %.2f = %.2f", previous, operand, calc.getAns());
+    };
+
+    public Command clear = (args) -> {
+        calc.resetAns();
+        cli.println("Answer reset to %.2f", calc.getAns());
+    };
+
+    public Command ans = (args) -> {
+        cli.println("%.2f", calc.getAns());
+    };
+
+    public Command pow = (args) -> {
+        double previous = calc.getAns();
+        double operand = Double.parseDouble(args[1]);
+        calc.raise(operand);
+        cli.println("Divided: %.2f ** %.2f = %.2f", previous, operand, calc.getAns());
+    };
 
     // TODO make a command for ALL cli instances
-    public void quit(String[] args) {
+    public Command quit = (args) -> {
         System.exit(0);
-    }
+    };
 
     // TODO make a command for ALL cli instances
-    public void alias(String[] args) {
+    public Command alias = (args) -> {
         // no args
         if (args.length == 1) {
             cli.println("Aliases: ");
@@ -84,10 +109,10 @@ public class ArithmeticsContainer extends CommandContainer {
         } catch (CommandIdentifierException e) {
             cli.println(e.getMessage());
         }
-    }
+    };
 
     // TODO make a command for ALL cli instances
-    public void unalias(String[] args) {
+    public Command unalias = (args) -> {
         if (args.length != 2) {
             cli.println("Incorrect number of arguments for command: unalias");
         }
@@ -96,5 +121,5 @@ public class ArithmeticsContainer extends CommandContainer {
         } catch (CommandIdentifierException e) {
             cli.println(e.getMessage());
         }
-    }
+    };
 }

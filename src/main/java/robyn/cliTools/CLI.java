@@ -19,7 +19,7 @@ import robyn.cliTools.exceptions.CommandIdentifierException;
  */
 public class CLI {
     public CommandRegister reg;
-    private String prompt = "$ ";
+    public String prompt = ColorCodes.BLUE + "$ " + ColorCodes.RESET;
 
     private Scanner scanner;
 

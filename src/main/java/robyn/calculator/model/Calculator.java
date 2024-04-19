@@ -30,6 +30,10 @@ public class Calculator {
         ans /= value;
     }
 
+    public void raise(double value) {
+        ans = Math.pow(ans, value);
+    }
+
     public void fail() throws Exception {
         throw new Exception("Exception for test purposes");
     }

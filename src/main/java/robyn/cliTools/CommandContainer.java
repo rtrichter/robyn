@@ -29,6 +29,7 @@ public abstract class CommandContainer {
     }
 
     public void deregisterAll(CLI cli) {
+        // commands
         for (String key : commands.keySet()) {
             try {
                 cli.reg.deregisterCommand(key);
@@ -36,21 +37,18 @@ public abstract class CommandContainer {
                 cli.println(e.getMessage());
             }
         }
+        // aliases
+        // most aliases will be
+        for (String key : aliases.keySet()) {
+            try {
+                if (aliases.keySet().contains(key)) {
+                    cli.reg.registerAlias(key, aliases.get(key));
+                }
+                // else the alias was automatically removed because it was
+                // linked to a command which was removed earlier in this method
+            } catch (CommandIdentifierException e) {
+                cli.println(e.getMessage());
+            }
+        }
     }
-    // /**
-    // * register all commands and aliases in this container
-    // * any conflicts are reported and skipped
-    // *
-    // * @param reg object to register commands to
-    // * NOTE not all containers will have the cli to access its register
-    // */
-    // public void registerAll(CommandRegister reg);
-    //
-    // /**
-    // * deregisters all commands
-    // * aliases are automatically deregistered by the CommandRegister instance
-    // *
-    // * @param reg object to deregister commands from
-    // */
-    // public void deregisterAll(CommandRegister reg);
 }
